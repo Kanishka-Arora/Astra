@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block title %}Incident Reporting – ASTRA{% endblock %}
+
+{% block content %}
+<div style="max-width: 940px; margin: 0 auto;">
+
+    <!-- Page Header -->
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <span class="section-tag">CONFIDENTIAL &amp; SECURE RECORD</span>
+        <h1 style="font-family: var(--font-heading); font-size: 2.4rem; color: #fff; margin: 0.4rem 0 0.75rem;">
+            Incident Reporting System
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 1rem; max-width: 640px; margin: 0 auto;">
+            Document unsafe situations, harassment, stalking, or suspicious activity.
+            All reports are saved to your private encrypted log — only you can see them.
+        </p>
+    </div>
+
+    <!-- Report Form -->
+    <div class="glass-card" style="padding: 2.25rem; margin-bottom: 2.5rem;">
+        <h2 style="font-family: var(--font-heading); font-size: 1.3rem; color: #fff; margin-bottom: 1.75rem;">
+            File New Incident Report
+        </h2>
+
+        <form method="POST" action="{{ url_for('report') }}" id="reportForm">
+
+            <!-- Row 1: Category + Date/Time -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="incidentType">Incident Category</label>
+                    <select id="incidentType" name="incident_type" class="form-control" required>
+                        <option value="" disabled selected>-- Select type --</option>
+                        <option value="Stalking / Following">Stalking / Following</option>
+                        <option value="Verbal Harassment / Catcalling">Verbal Harassment / Catcalling</option>
+                        <option value="Physical Threat / Assault">Physical Threat / Assault</option>
+                        <option value="Suspicious Activity / Lurking">Suspicious Activity / Lurking</option>
+                        <option value="Unsafe Transit / Cab Deviation">Unsafe Transit / Cab Deviation</option>
+                        <option value="Poor Lighting / Isolated Area">Poor Lighting / Isolated Area</option>
+                        <option value="Online / Digital Harassment">Online / Digital Harassment</option>
+                        <option value="Other">Other Incident</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="dateTime">Date &amp; Time of Occurrence</label>
+                    <input type="datetime-local" id="dateTime" name="date_time" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Row 2: Location + Urgency -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="locationInput">Location / Address</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="locationInput" name="location" class="form-control"
+                               placeholder="e.g. 5th Ave &amp; Pine St, Metro Station exit..." required>
+                        <button type="button" class="btn btn-secondary btn-sm" id="fillGpsBtn"
+                                style="white-space: nowrap; flex-shrink: 0;">
+                            GPS
+                        </button>
+                    </div>
+                    <span class="form-hint">Tap GPS to auto-fill your coordinates.</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="urgency">Urgency / Severity</label>
+                    <select id="urgency" name="urgency" class="form-control" required>
+                        <option value="Low">Low — Area Observation</option>
+                        <option value="Medium" selected>Medium — Noticeable Threat</option>
+                        <option value="High">High — Direct Harassment</option>
+                        <option value="Critical">Critical — Immediate Danger / Physical Act</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="form-label" for="description">Detailed Incident Narrative</label>
+                <textarea id="description" name="description" class="form-control" rows="5"
+                    placeholder="Describe the sequence of events: suspect appearance, vehicle details, direction of travel, bystanders, what was said or done..."
+                    required></textarea>
+                <span class="form-hint" id="charCount" style="text-align:right;display:block;">0 characters</span>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn btn-secondary" id="clearFormBtn">Clear Form</button>
+                <button type="submit" class="btn btn-primary" id="submitReportBtn"
+                        style="padding: 0.85rem 2.5rem; font-size: 1rem;">
+                    Submit Confidential Report
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Incident History -->
+    <div class="glass-card" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.25rem; color: #fff;">
+                Your Incident Log
+                <span style="background:rgba(255,26,26,0.15);border:1px solid rgba(255,26,26,0.3);
+                             color:var(--red-glow);font-size:0.75rem;padding:2px 10px;
+                             border-radius:var(--radius-full);margin-left:10px;font-weight:700;">
+                    {{ reports|length }} report{{ 's' if reports|length != 1 else '' }}
+                </span>
+            </h2>
+            <span style="font-size:0.8rem;color:var(--text-muted);">
+                Private &amp; Encrypted — Visible Only to You
+            </span>
+        </div>
+
+        {% if reports %}
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for r in reports %}
+                    <div class="report-card" id="report-{{ r['id'] }}">
+                        <!-- Card Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem;">
+                            <div style="font-family: var(--font-heading); font-weight: 700; color: #fff; font-size: 1.05rem;">
+                                {{ r['incident_type'] }}
+                            </div>
+                            <div style="display:flex; align-items:center; gap:0.6rem; flex-shrink:0;">
+                                <span style="
+                                    font-size: 0.72rem; font-weight: 800; font-family: var(--font-heading);
+                                    padding: 3px 12px; border-radius: var(--radius-full); letter-spacing: 0.8px;
+                                    {% if r['urgency'] == 'Critical' %}
+                                        background: rgba(214,0,0,0.85); color: #fff; border: 1px solid #FF1A1A;
+                                    {% elif r['urgency'] == 'High' %}
+                                        background: rgba(214,0,0,0.3); color: #FF1A1A; border: 1px solid rgba(255,26,26,0.4);
+                                    {% elif r['urgency'] == 'Medium' %}
+                                        background: rgba(255,160,0,0.15); color: #FFA500; border: 1px solid rgba(255,160,0,0.3);
+                                    {% else %}
+                                        background: rgba(255,255,255,0.08); color: #B8B8B8; border: 1px solid rgba(255,255,255,0.12);
+                                    {% endif %}">
+                                    {{ r['urgency'] }}
+                                </span>
+
+                                {% if r['user_id'] == current_user_id %}
+                                    <span style="font-size:0.72rem;color:var(--text-muted);font-style:italic;">Your report</span>
+                                    <!-- Delete Button — only visible to the report's owner -->
+                                    <form method="POST" action="{{ url_for('delete_report', report_id=r['id']) }}"
+                                          onsubmit="return confirm('Permanently delete this incident report?');"
+                                          style="display:inline;">
+                                        <button type="submit" class="btn btn-sm"
+                                                style="background:transparent;border:1px solid rgba(255,26,26,0.3);
+                                                       color:var(--text-muted);font-size:0.75rem;padding:3px 10px;
+                                                       cursor:pointer;transition:all 0.2s ease;"
+                                                onmouseover="this.style.borderColor='#FF1A1A';this.style.color='#FF1A1A';"
+                                                onmouseout="this.style.borderColor='rgba(255,26,26,0.3)';this.style.color='var(--text-muted)';">
+                                            Delete
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Meta Row -->
+                        <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem; display:flex; flex-wrap:wrap; gap: 0.75rem;">
+                            <span>
+                                <strong style="color:#B8B8B8;">When:</strong>
+                                {{ r['date_time'] if r['date_time'] else 'Not specified' }}
+                            </span>
+                            <span style="color:rgba(255,255,255,0.15);">|</span>
+                            <span>
+                                <strong style="color:#B8B8B8;">Where:</strong>
+                                {{ r['location'] }}
+                            </span>
+                            <span style="color:rgba(255,255,255,0.15);">|</span>
+                            <span>
+                                <strong style="color:#B8B8B8;">Logged:</strong>
+                                {{ r['created_at'] }}
+                            </span>
+                        </div>
+
+                        <!-- Narrative -->
+                        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.65; margin: 0;
+                                  border-left: 3px solid rgba(255,26,26,0.35); padding-left: 0.85rem;">
+                            {{ r['description'] }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.3;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </div>
+                <p style="font-size: 1.1rem; margin-bottom: 0.4rem; color: #B8B8B8;">No incident records yet.</p>
+                <p style="font-size: 0.9rem;">Your log is clean. Use the form above to file a report if needed.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Auto-fill current date/time
+    const dateInput = document.getElementById('dateTime');
+    if (dateInput && !dateInput.value) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        dateInput.value = now.toISOString().slice(0, 16);
+    }
+
+    // Character counter on description
+    const desc      = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    if (desc && charCount) {
+        const update = () => charCount.textContent = desc.value.length + ' characters';
+        desc.addEventListener('input', update);
+        update();
+    }
+
+    // GPS auto-fill button
+    const fillGpsBtn = document.getElementById('fillGpsBtn');
+    const locInput   = document.getElementById('locationInput');
+    if (fillGpsBtn && locInput) {
+        fillGpsBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert('Geolocation not supported. Please type the address manually.');
+                return;
+            }
+            fillGpsBtn.textContent = 'Locating...';
+            fillGpsBtn.disabled    = true;
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    locInput.value = `GPS: ${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    fillGpsBtn.textContent = 'GPS OK';
+                    fillGpsBtn.disabled    = false;
+                    setTimeout(() => fillGpsBtn.textContent = 'GPS', 2500);
+                },
+                err => {
+                    alert('Could not access location. Please type the address manually.');
+                    fillGpsBtn.textContent = 'GPS';
+                    fillGpsBtn.disabled    = false;
+                }
+            );
+        });
+    }
+
+    // Clear form button
+    const clearBtn = document.getElementById('clearFormBtn');
+    const form     = document.getElementById('reportForm');
+    if (clearBtn && form) {
+        clearBtn.addEventListener('click', () => {
+            if (confirm('Clear all form fields?')) {
+                form.reset();
+                if (charCount) charCount.textContent = '0 characters';
+                // Re-set date to now
+                if (dateInput) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    dateInput.value = now.toISOString().slice(0, 16);
+                }
+            }
+        });
+    }
+
+    // Submit button loading state
+    const submitBtn = document.getElementById('submitReportBtn');
+    if (form && submitBtn) {
+        form.addEventListener('submit', () => {
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled    = true;
+        });
+    }
+});
+</script>
+{% endblock %}

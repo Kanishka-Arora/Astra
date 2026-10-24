@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Contacts - ASTRA{% endblock %}
+
+{% block content %}
+    <div style="max-width: 960px; margin: 0 auto;">
+        <!-- Header -->
+        <div style="margin-bottom: 2rem; text-align: center;">
+            <span class="section-tag">TRUSTED DEFENSE CIRCLE</span>
+            <h1 style="font-family: var(--font-heading); font-size: 2.4rem; color: #fff; margin-bottom: 0.5rem;">
+                Emergency Contacts
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1rem; max-width: 650px; margin: 0 auto;">
+                Add family, close friends, or trusted guardians. When you trigger the SOS protocol or Safety Siren, instant emergency distress telemetry and real-time GPS location links will be dispatched directly to these responders.
+            </p>
+        </div>
+
+        <!-- Quick SOS & Alarm Test Bar -->
+        <div class="glass-card" style="margin-bottom: 2rem; padding: 1.25rem 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-color: rgba(255, 26, 26, 0.4);">
+            <div>
+                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #fff; margin-bottom: 0.2rem;">
+                    Emergency Response Testing Strip
+                </h4>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                    Verify that your designated emergency guardians receive live GPS links and dispatches.
+                </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="triggerSOS()">
+                    Broadcast SOS to All
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.toggleSafetyAlarm()">
+                    Toggle Safety Siren
+                </button>
+            </div>
+        </div>
+
+        <!-- Add Contact Form Card -->
+        <div class="glass-card" style="margin-bottom: 2.5rem;">
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--red-glow); font-weight: bold; font-size: 1.4rem;">+</span> Add Emergency Responder
+            </h3>
+
+            <form id="addContactForm" method="POST" action="{{ url_for('contacts') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) 130px; gap: 1rem; align-items: flex-end;">
+                <div>
+                    <label class="form-label" for="contactName">Full Name</label>
+                    <input type="text" id="contactName" name="name" class="form-control" placeholder="e.g. Sarah Jenkins" required autofocus>
+                </div>
+
+                <div>
+                    <label class="form-label" for="contactPhone">Mobile Phone (SMS & WhatsApp)</label>
+                    <input type="tel" id="contactPhone" name="phone" class="form-control" placeholder="e.g. +1 555 234 5678" required>
+                </div>
+
+                <div>
+                    <label class="form-label" for="contactRelation">Relationship</label>
+                    <select id="contactRelation" name="relation" class="form-control">
+                        <option value="Family">Family / Sibling</option>
+                        <option value="Parent">Parent / Guardian</option>
+                        <option value="Partner">Partner / Spouse</option>
+                        <option value="Friend">Close Friend</option>
+                        <option value="Doctor">Doctor / Caregiver</option>
+                        <option value="Security">Security / Police</option>
+                        <option value="Neighbor">Neighbor</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="form-label" for="contactEmail">Email (Optional)</label>
+                    <input type="email" id="contactEmail" name="email" class="form-control" placeholder="sarah@example.com">
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 0.82rem 1rem; font-weight: 700;">
+                        Add Contact
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Stored Contacts Table -->
+        <div class="glass-card" style="padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: #fff; margin-bottom: 0.15rem;">
+                        Configured Guardians (<span id="contactsCountBadge">{{ contacts|length if contacts else 0 }}</span>)
+                    </h3>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">
+                        Encrypted in SQLite database & synced for immediate SOS dispatch
+                    </span>
+                </div>
+                <span class="status-indicator">
+                    <span class="status-dot-green"></span> Network Ready
+                </span>
+            </div>
+
+            <div class="contacts-table-wrap">
+                <table class="contacts-table">
+                    <thead>
+                        <tr>
+                            <th>Responder Name</th>
+                            <th>Relationship</th>
+                            <th>Phone / Contact</th>
+                            <th style="text-align: right;">Emergency Distress Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTableBody">
+                        <!-- Populated dynamically via script.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Information Callout -->
+        <div style="margin-top: 2rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-sm); background: rgba(61, 0, 5, 0.4); border: 1px solid var(--card-border); font-size: 0.88rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.85rem;">
+            <span>
+                <strong>How Emergency Alerts Work:</strong> When you press <strong>SOS ALERT</strong> or start the <strong>Safety Siren</strong>, Astra locks your real-time satellite coordinates and generates direct SMS and WhatsApp distress messages with live Google Maps links ready to dispatch to each responder above.
+            </span>
+        </div>
+    </div>
+{% endblock %}
+

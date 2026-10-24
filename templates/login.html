@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - ASTRA Women Safety{% endblock %}
+
+{% block content %}
+    <div class="form-card">
+        <div class="form-header">
+            <div class="brand-badge" style="margin: 0 auto 1rem; width: 48px; height: 48px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h2>Authenticate to Astra</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Access your personalized defense console & encrypted logs.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="next" value="{{ next or '' }}">
+
+            <div class="form-group">
+                <label class="form-label" for="username">Username or Email</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Enter username or email" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
+                    <button type="button" id="togglePasswordBtn" style="background: none; border: none; color: var(--red-glow); font-size: 0.82rem; cursor: pointer; padding: 0;">Show Password</button>
+                </div>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 0.85rem; font-size: 1rem; margin-top: 1rem;">
+                Secure Login →
+            </button>
+        </form>
+
+        <!-- Quick Demo Account Shortcut -->
+        <div style="margin-top: 1.5rem; padding: 1rem 1.25rem; background: rgba(255, 26, 26, 0.08); border: 1px solid rgba(255, 26, 26, 0.25); border-radius: var(--radius-sm); font-size: 0.88rem; text-align: left;">
+            <div style="font-weight: 700; color: #fff; margin-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>Quick Demo Credentials</span>
+                <button type="button" id="fillDemoBtn" style="background: var(--red-bright); color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+                    Click to Auto-Fill
+                </button>
+            </div>
+            <div style="color: var(--text-secondary); font-family: monospace; font-size: 0.82rem;">
+                User: <strong style="color: #fff;">demo</strong> &nbsp;|&nbsp; Pass: <strong style="color: #fff;">password123</strong>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--text-secondary);">
+            Don't have an account yet? 
+            <a href="{{ url_for('register') }}" style="color: var(--red-glow); font-weight: 600; text-decoration: none;">Create one here</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Demo account filler
+    document.getElementById('fillDemoBtn')?.addEventListener('click', () => {
+        const u = document.getElementById('username');
+        const p = document.getElementById('password');
+        if (u && p) {
+            u.value = 'demo';
+            p.value = 'password123';
+            u.focus();
+        }
+    });
+
+    // Password toggle
+    const toggleBtn = document.getElementById('togglePasswordBtn');
+    const pwdInput = document.getElementById('password');
+    if (toggleBtn && pwdInput) {
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = pwdInput.type === 'password';
+            pwdInput.type = isPassword ? 'text' : 'password';
+            toggleBtn.textContent = isPassword ? 'Hide Password' : 'Show Password';
+        });
+    }
+</script>
+{% endblock %}
+

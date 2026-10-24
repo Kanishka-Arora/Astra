@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - ASTRA Women Safety{% endblock %}
+
+{% block content %}
+    <div class="form-card">
+        <div class="form-header">
+            <div class="brand-badge" style="margin: 0 auto 1rem; width: 48px; height: 48px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h2>Register Protected Account</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Join Astra's security network to customize alerts and store logs.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+            <div class="form-group">
+                <label class="form-label" for="username">User Handle / Name</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="e.g. Elena_V" required minlength="3" autofocus>
+                <span class="form-hint">At least 3 characters. Letters, numbers, underscores.</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="elena@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Create strong passphrase" required minlength="6">
+                <span class="form-hint">Must be at least 6 characters.</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirm_password" class="form-control" placeholder="Re-enter password" required minlength="6">
+                <span id="pwdMatchHint" class="form-hint" style="color: var(--text-muted);">Must match the password above.</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="regSubmitBtn" style="padding: 0.85rem; font-size: 1rem; margin-top: 1rem;">
+                Create Protected Account →
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--text-secondary);">
+            Already have an active account? 
+            <a href="{{ url_for('login') }}" style="color: var(--red-glow); font-weight: 600; text-decoration: none;">Login here</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const pwd = document.getElementById('password');
+    const cpwd = document.getElementById('confirmPassword');
+    const hint = document.getElementById('pwdMatchHint');
+    const form = document.getElementById('registerForm');
+
+    function checkMatch() {
+        if (!cpwd.value) {
+            hint.textContent = 'Must match the password above.';
+            hint.style.color = 'var(--text-muted)';
+            return;
+        }
+        if (pwd.value === cpwd.value) {
+            hint.textContent = 'Passwords match.';
+            hint.style.color = '#10b981';
+        } else {
+            hint.textContent = 'Passwords do not match!';
+            hint.style.color = '#FF1A1A';
+        }
+    }
+
+    pwd?.addEventListener('input', checkMatch);
+    cpwd?.addEventListener('input', checkMatch);
+
+    form?.addEventListener('submit', (e) => {
+        if (pwd.value !== cpwd.value) {
+            e.preventDefault();
+            alert('Passwords do not match. Please verify your passwords.');
+            cpwd.focus();
+        }
+    });
+</script>
+{% endblock %}
+

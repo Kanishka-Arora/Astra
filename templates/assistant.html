@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Safety Assistant - ASTRA Tactical Guidance{% endblock %}
+
+{% block content %}
+    <div style="max-width: 900px; margin: 0 auto;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 2.5rem;">
+            <span class="section-tag">TACTICAL INTELLIGENCE PROTOCOLS</span>
+            <h1 style="font-family: var(--font-heading); font-size: 2.4rem; color: #fff; margin-bottom: 0.5rem;">
+                Safety Assistant
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1rem; max-width: 650px; margin: 0 auto;">
+                Instant situational action plans designed to help you de-escalate, deter potential threats, maintain spatial awareness, and take decisive protective action.
+            </p>
+        </div>
+
+        <!-- Quick Emergency Action Banner -->
+        <div style="background: linear-gradient(135deg, rgba(61, 0, 5, 0.7), rgba(13, 0, 2, 0.9)); border: 1px solid var(--red-bright); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h4 style="font-family: var(--font-heading); color: #fff; font-size: 1.15rem; margin-bottom: 0.2rem;">
+                    In Immediate Imminent Danger?
+                </h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Do not read guides. Initiate immediate defense protocols below.
+                </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-primary" onclick="triggerSOS()">
+                    Trigger SOS
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="window.toggleSafetyAlarm()">
+                    Sound Siren
+                </button>
+            </div>
+        </div>
+
+        <!-- Situational Scenario Guides Accordion -->
+        <div class="assistant-scenario-list">
+
+            <!-- Scenario 1: Feeling Unsafe / Walking Alone -->
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-title">
+                        1. Feeling Unsafe While Walking Alone / At Night
+                    </div>
+                    <span class="scenario-toggle-arrow" style="color: var(--red-bright); font-weight: bold;">▼</span>
+                </div>
+                <div class="scenario-body" style="display: block;">
+                    <p>When walking alone, attackers target unawareness and isolated pathways. Maintain the tactical initiative:</p>
+                    <ul class="checklist">
+                        <li><strong>Remove earphones:</strong> Do not wear headphones or look down at your screen while walking. Keep auditory awareness sharp.</li>
+                        <li><strong>Walk near the curb:</strong> Avoid walking closely alongside dark alleys, doorways, or blind corners.</li>
+                        <li><strong>Project confidence:</strong> Walk at a brisk, purposeful pace with your head up and eyes sweeping the perimeter.</li>
+                        <li><strong>Fake phone call / Live location:</strong> Send a live location link to a trusted contact or hold a deliberate, audible voice call stating your current street and estimated arrival time.</li>
+                        <li><strong>Identify open businesses:</strong> Keep track of 24/7 pharmacies, open petrol stations, or convenience stores you can quickly divert into.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Scenario 2: Travelling Alone in Cab / Transit -->
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-title">
+                        2. Travelling Alone (Cab, Rideshare, or Public Transit)
+                    </div>
+                    <span class="scenario-toggle-arrow" style="color: var(--red-bright); font-weight: bold;">▼</span>
+                </div>
+                <div class="scenario-body" style="display: none;">
+                    <p>Rideshares and private cabs introduce confined spaces. Enforce these safety checks prior to and during your trip:</p>
+                    <ul class="checklist">
+                        <li><strong>Verify vehicle registration and driver identity:</strong> Check the plate number and driver profile before entering. Never get into a car that does not match the app.</li>
+                        <li><strong>Sit in the back seat behind the driver:</strong> This makes it impossible for the driver to reach you without fully turning around and leaves you access to both rear doors.</li>
+                        <li><strong>Test child-lock before leaving curb:</strong> Open the door slightly to ensure you are not locked from the inside.</li>
+                        <li><strong>Share your ride trip link:</strong> Broadcast your live ride link to family or emergency contacts through Astra or your rideshare app.</li>
+                        <li><strong>Immediate route divergence action:</strong> If the vehicle takes an unexplained turn or highway detour, verbally question the driver immediately and loudly. If answers are evasive, prepare the SOS trigger.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Scenario 3: Lost or Stranded in an Unknown Area -->
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-title">
+                        3. Lost or Stranded in an Unfamiliar Area
+                    </div>
+                    <span class="scenario-toggle-arrow" style="color: var(--red-bright); font-weight: bold;">▼</span>
+                </div>
+                <div class="scenario-body" style="display: none;">
+                    <p>When disoriented in unfamiliar territory, prevent panic and stabilize your position:</p>
+                    <ul class="checklist">
+                        <li><strong>Do not look visibly lost:</strong> Stop inside an illuminated establishment (coffee shop, store, hotel lobby) rather than standing in the middle of a dark street staring at your phone.</li>
+                        <li><strong>Use Astra Geolocation:</strong> Open Astra's Dashboard, hit "Get Current Location", and copy your coordinates to send to a guardian or taxi service.</li>
+                        <li><strong>Conserve mobile battery:</strong> Switch your phone to Low Power Mode and disable unnecessary background apps.</li>
+                        <li><strong>Call an official taxi or trusted contact:</strong> Avoid accepting unmarked car rides or unsolicited offers from strangers on the road.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Scenario 4: Facing Stalking or Harassment -->
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-title">
+                        4. Facing Harassment or Suspected Stalker
+                    </div>
+                    <span class="scenario-toggle-arrow" style="color: var(--red-bright); font-weight: bold;">▼</span>
+                </div>
+                <div class="scenario-body" style="display: none;">
+                    <p>If you suspect someone is following you or persistent harassment begins:</p>
+                    <ul class="checklist">
+                        <li><strong>Conduct the 4-Right-Turns Test:</strong> If walking or driving, make 4 consecutive right turns. If the individual is still behind you, they are undeniably following you.</li>
+                        <li><strong>Cross the street:</strong> Cross to the opposite sidewalk. Look back casually to confirm if their path alters to match yours.</li>
+                        <li><strong>Do NOT head directly home:</strong> Do not lead a stalker to your residence or apartment gate. Head to the nearest police station, hospital, or crowded venue.</li>
+                        <li><strong>Make noise and draw witnesses:</strong> Look directly at the stalker to eliminate anonymity. In public, speak clearly and loudly: <em>"Stop following me!"</em> to alert bystanders.</li>
+                        <li><strong>Document in Astra:</strong> Log a report with date, time, description, and location once you reach safety.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Scenario 5: Imminent Emergency / Confrontation -->
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-title">
+                        5. Imminent Physical Confrontation / Crisis
+                    </div>
+                    <span class="scenario-toggle-arrow" style="color: var(--red-bright); font-weight: bold;">▼</span>
+                </div>
+                <div class="scenario-body" style="display: none;">
+                    <p>When physical safety is compromised and an altercation is immediate:</p>
+                    <ul class="checklist">
+                        <li><strong>Create distance first:</strong> Run towards light, traffic, or populated zones. Physical distance is the highest-probability survival tactic.</li>
+                        <li><strong>Trigger the Astra Siren:</strong> Activate the Acoustic Safety Siren on full volume. The loud disorienting high-pitch frequency breaks surprise and draws immediate public eyes.</li>
+                        <li><strong>Target vulnerable anatomy:</strong> If forced to defend, strike high-leverage areas: eyes, nose bridge, throat, groin, or knee joints. Use personal items (keys, heels, bag corners).</li>
+                        <li><strong>Shout "FIRE" instead of "HELP":</strong> Studies demonstrate that shouting "FIRE" draws significantly faster citizen emergence than "HELP".</li>
+                        <li><strong>Dial 112 / 100:</strong> Keep lines open even if you drop the phone so dispatchers can hear and trace background audio.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+

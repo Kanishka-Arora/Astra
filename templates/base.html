@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ASTRA - Women Safety & Emergency Defense Network{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="brand-logo">
+                <div class="brand-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div class="brand-text">ASTRA<span>.</span></div>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="{{ url_for('contacts') }}" class="{% if request.endpoint == 'contacts' %}active{% endif %}">Emergency Contacts</a></li>
+                <li><a href="{{ url_for('report') }}" class="{% if request.endpoint == 'report' %}active{% endif %}">Report Incident</a></li>
+                <li><a href="{{ url_for('assistant') }}" class="{% if request.endpoint == 'assistant' %}active{% endif %}">Safety Assistant</a></li>
+
+                {% if session.get('user_id') %}
+                    <li style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.65rem; border-radius: 9999px; background: rgba(255, 26, 26, 0.12); border: 1px solid rgba(255, 26, 26, 0.3); color: #fff; font-size: 0.82rem; font-weight: 600;">
+                            <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                            {{ session.get('username') }}
+                        </span>
+                        <a href="{{ url_for('logout') }}" style="color: var(--text-muted); font-size: 0.82rem; padding: 0.25rem 0.4rem;" title="Sign out of Astra">Logout</a>
+                    </li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="{% if request.endpoint == 'register' %}active{% endif %}">Register</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="nav-actions">
+                <button type="button" class="btn-nav-sos" onclick="triggerSOS()">
+                    SOS ALERT
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; color:inherit; cursor:pointer; font-size:1.1rem;">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Dynamic Content Block -->
+    <main class="content-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Global SOS Emergency Confirmation Modal -->
+    <div class="modal-overlay" id="sosModalOverlay">
+        <div class="modal-box" style="max-width:580px;">
+            <span class="modal-badge">EMERGENCY BROADCAST ACTIVE</span>
+            <h2 class="modal-title">SOS SIGNAL SENT</h2>
+            <p class="modal-status-text">
+                Emergency distress telemetry dispatched. Real-time GPS coordinates are being locked and transmitted to your guardian contacts below.
+            </p>
+
+            <!-- GPS Location Panel -->
+            <div class="modal-info-panel" id="sosLocationPreview">
+                <div style="display:flex;align-items:center;gap:8px;color:#B8B8B8;">
+                    <span class="sos-spinner"></span> Acquiring GPS satellite lock&hellip;
+                </div>
+            </div>
+
+            <!-- Alerted Contacts Panel -->
+            <div class="modal-info-panel">
+                <p style="color:#FF1A1A;font-weight:700;margin-bottom:8px;font-size:0.82rem;letter-spacing:1px;">
+                    DISPATCH TARGETS
+                </p>
+                <div id="sosContactsAlerted">
+                    <em style="color:var(--text-muted);">Loading contacts&hellip;</em>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <a href="tel:112" class="btn btn-primary btn-block" style="font-size:1.05rem;text-align:center;">
+                    Quick Dial Emergency (112)
+                </a>
+                <button type="button" class="btn btn-secondary btn-block" id="closeSosModalBtn">
+                    Stand Down / Cancel SOS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Master Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div style="display:flex; align-items:center; gap:0.5rem; font-family:var(--font-heading); font-weight:700; font-size:1.2rem; color:#fff;">
+                    <span style="color:var(--red-glow); display:inline-flex; align-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> ASTRA DEFENSE NETWORK
+                </div>
+                <p>Empowering women with next-generation protective security tech & instant response systems.</p>
+            </div>
+
+            <ul class="footer-links">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('contacts') }}">Contacts</a></li>
+                <li><a href="{{ url_for('report') }}">Incident Reports</a></li>
+                <li><a href="{{ url_for('assistant') }}">Safety Assistant</a></li>
+            </ul>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                © 2026 ASTRA System. Prototype Safety Architecture.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Core -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+
+</body>
+</html>
+
